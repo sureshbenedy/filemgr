@@ -8,13 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("storage")
 public class StorageProperties {
-
-	@Value("app.storge.root.dir")
-	private String rootDir; 
-	
 	public String getLocation() throws URISyntaxException {
-		// TODO Auto-generated method stub
-		return "/home/suresh/temp/";
+		return "<setme>";
 	}
 
 }
