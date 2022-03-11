@@ -60,8 +60,8 @@ public class FileUploadController {
 			return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
 					"attachment; filename=\"" + file.getFilename() + "\"").body(file);
 		} catch (StorageFileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			//e.printStackTrace();
 		}
 		return ResponseEntity.ok(null);
 	}
@@ -75,8 +75,8 @@ public class FileUploadController {
 			redirectAttributes.addFlashAttribute("message",
 					"You successfully uploaded " + file.getOriginalFilename() + "!");
 		} catch (StorageException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			//e.printStackTrace();
 		}
 
 		return "redirect:/";
@@ -90,12 +90,12 @@ public class FileUploadController {
 			storageService.store(file);
 			redirectAttributes.addFlashAttribute("message",
 					"You successfully uploaded " + file.getOriginalFilename() + "!");
+			return new ResponseEntity<>("You successfully uploaded " , HttpStatus.OK);
 		} catch (StorageException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 
-		return new ResponseEntity<>("You successfully uploaded " , HttpStatus.OK);
+		return new ResponseEntity<>("Not Done" , HttpStatus.INSUFFICIENT_STORAGE);
 	}
 	
 	@ExceptionHandler(StorageFileNotFoundException.class)

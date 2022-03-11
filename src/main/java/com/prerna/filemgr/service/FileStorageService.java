@@ -11,11 +11,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.prerna.filemgr.StorageProperties;
@@ -23,6 +23,7 @@ import com.prerna.filemgr.storage.StorageException;
 import com.prerna.filemgr.storage.StorageFileNotFoundException;
 import com.prerna.filemgr.storage.StorageService;
 
+@Profile("local")
 @Service
 public class FileStorageService implements StorageService {
 

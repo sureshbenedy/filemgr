@@ -32,14 +32,21 @@ public class FileUploader {
 
 	  connection.setRequestProperty("Content-Type", multipartEntity.getContentType().getValue());
 	  OutputStream out = connection.getOutputStream();
+	  int status = -1;
+	  String content = "";
 	  try {
 	      multipartEntity.writeTo(out);
+		  status = connection.getResponseCode();
+		  
+		  if(status == 200) {
+			  InputStream contentStrean = (InputStream)connection.getContent();
+			  content = new String(contentStrean.readAllBytes());
+			  System.out.println(String.format("Status : %3d\nMsg : %s", status, content));
+		  }else {
+			  System.out.println(String.format("Failed With Status : %3d", status));
+		  }		  
 	  } finally {
 	      out.close();
 	  }
-	  int status = connection.getResponseCode();
-	  InputStream content = (InputStream)connection.getContent();
-	  System.out.println(String.format("Status : %3d\nMsg : %s", status, new String(content.readAllBytes())));
-	
   }
 }
