@@ -1,52 +1,96 @@
 package com.prerna.filemgr.cli;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.FileBody;
+import com.prerna.filemgr.service.UploaderSevice;
 
-/* HttpClient file uploads with Apache Commons */
+
 public class FileUploader {
-  private static String uurl = "http://localhost:8080/upload";
+	private static final String UPLOAD_CMD = "upload";
+	private static final String LIST_CMD = "list";
+	private static final String LOAD_CMD = "load";
+	private static final String DELETE_CMD = "delete";
+	private static final String HELP_CMD = "help";
+	
+	
+	private static final int UPLOAD = 0;
+	private static final int LIST = 1;
+	private static final int LOAD = 2;
+	private static final int DELETE = 3;
+	private static final int HELP = 4;
+	private static final int DEFAULT = 5;
+	
+	private static UploaderSevice client = new FileUploaderClient();
+	public static void main(String[] args) throws IOException {
+		int command = getCommand(args);
+		switch (command) {
+		case UPLOAD:
+			client.store(args[1]);
+			break;
+		case LIST:
+			client.getList();
+			break;
+		case LOAD:
+			client.getFileContent(args[1],args[2]);
+			break;
+		case DELETE:
+			client.deleteFile(args[1]);
+			break;
+		case HELP:
+			printHelp(args[1]);
+			break;
+		default:
+			printUsage();			
+		}
+	}
 
-  public static void main(String[] args) throws IOException {
-	  ClassLoader loader = FileUploader.class.getClassLoader();
-	  System.out.println(loader.getResource("com/prerna/filemgr/cli/FileUploader.class"));
-	  String fileName = loader.getResource("com/prerna/filemgr/cli/FileUploader.class").toString().substring(5);
-	  
-	  URL url = new URL(uurl);
-	  HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-	  connection.setDoOutput(true);
-	  connection.setRequestMethod("POST");
+	private static void printUsage() {
+		System.out.println("Usage to execute command : java FileUploader <upload|list|load|delete> [<filename>]");
+		System.out.println("Usage to get help : java FileUploader help <upload|list|load|delete>");
+	}
 
+	private static void printHelp(String helpFor) {
+		if(helpFor.equalsIgnoreCase(UPLOAD_CMD)) {
+			System.out.println("Usage to execute command : java FileUploader upload [<filename>]");			
+			System.out.println("Example for windows environment  : java FileUploader upload c:/upload/test.txt");
+			System.out.println("Example for mac/linux environment : java FileUploader upload /home/user/data/test.txt");
+		}
+		if(helpFor.equalsIgnoreCase(LOAD_CMD)) {
+			System.out.println("Usage to execute command : java FileUploader load <filename> <targetPath>");			
+			System.out.println("Example for windows environment  : java FileUploader load test.txt c:/download/");
+			System.out.println("Example for mac/linux environment : java FileUploader load test.txt /home/user/download/");
+		}
+		if(helpFor.equalsIgnoreCase(LIST_CMD)) {
+			System.out.println("Example command : java FileUploader list");			
+		}
+		if(helpFor.equalsIgnoreCase(DELETE_CMD)) {
+			System.out.println("Usage to execute command : java FileUploader delete <serverFilename>");			
+			System.out.println("Example for windows environment  : java FileUploader delete HELP.md");
+		}
+		// TODO: Fix any missing
+	}
 
-	  FileBody fileBody = new FileBody(new File(fileName ));
-	  MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.STRICT);
-	  multipartEntity.addPart("file", fileBody);
+	private static int getCommand(String[] args) {
+		if(args.length<1)
+			return DEFAULT;
+		String cmd = args[0];
+		if(cmd.equalsIgnoreCase(UPLOAD_CMD)) {
+			return UPLOAD;
+		}
+		if(cmd.equalsIgnoreCase(LIST_CMD)) {
+			return LIST;
+		}
 
-	  connection.setRequestProperty("Content-Type", multipartEntity.getContentType().getValue());
-	  OutputStream out = connection.getOutputStream();
-	  int status = -1;
-	  String content = "";
-	  try {
-	      multipartEntity.writeTo(out);
-		  status = connection.getResponseCode();
-		  
-		  if(status == 200) {
-			  InputStream contentStrean = (InputStream)connection.getContent();
-			  content = new String(contentStrean.readAllBytes());
-			  System.out.println(String.format("Status : %3d\nMsg : %s", status, content));
-		  }else {
-			  System.out.println(String.format("Failed With Status : %3d", status));
-		  }		  
-	  } finally {
-	      out.close();
-	  }
-  }
+		if(cmd.equalsIgnoreCase(LOAD_CMD)) {
+			return LOAD;
+		}
+
+		if(cmd.equalsIgnoreCase(DELETE_CMD)) {
+			return DELETE;
+		}
+		if(cmd.equalsIgnoreCase(HELP_CMD)) {
+			return HELP;
+		}
+		return DEFAULT;
+	}
 }
