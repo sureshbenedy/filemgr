@@ -45,4 +45,10 @@ public class DummyStorageService implements StorageService {
 		
 	}
 
+	@Override
+	public void remove(String fileName) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

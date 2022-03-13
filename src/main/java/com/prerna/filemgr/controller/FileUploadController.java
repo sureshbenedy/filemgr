@@ -66,6 +66,7 @@ public class FileUploadController{
 
 	@DeleteMapping("/remove/{file}")
 	public @ResponseBody String deleteFile(@PathVariable(name="file") String fileName) {
+		storageService.remove(fileName);
 		System.out.println("Receice request to delete File" + fileName);
 		return "Success";
 	}
